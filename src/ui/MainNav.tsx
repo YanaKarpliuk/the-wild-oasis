@@ -7,6 +7,7 @@ import {
   HiOutlineHomeModern,
   HiOutlineUsers,
 } from 'react-icons/hi2';
+import { mediaBreakpointDown } from '../styles/Mixins';
 
 const NavList = styled.ul`
   display: flex;
@@ -15,6 +16,15 @@ const NavList = styled.ul`
 `;
 
 const StyledNavLink = styled(NavLink)`
+  ${mediaBreakpointDown('lg')`
+    aside:not(.sidebar-is-open) & {
+    padding: 12px 7px;
+    span {
+      display: none;
+    }
+  }
+  `}
+  
   &:link,
   &:visited {
     display: flex;
@@ -28,25 +38,33 @@ const StyledNavLink = styled(NavLink)`
     transition: all 0.3s;
   }
 
-  /* This works because react-router places the active class on the active NavLink */
-
   &:hover,
+  &:focus,
   &:active,
   &.active:link,
   &.active:visited {
     color: var(--color-grey-800);
     background-color: var(--color-grey-50);
     border-radius: var(--border-radius-sm);
+    outline: none;
+  }
+
+  &:focus {
+    color: var(--color-grey-800);
+    background-color: var(--color-grey-100);
+    border-radius: var(--border-radius-sm);
+    outline: none;
   }
 
   & svg {
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 24px;
+    height: 24px;
     color: var(--color-grey-400);
     transition: all 0.3s;
   }
 
   &:hover svg,
+  &:focus svg,
   &:active svg,
   &.active:link svg,
   &.active:visited svg {
