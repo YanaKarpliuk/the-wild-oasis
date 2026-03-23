@@ -34,6 +34,7 @@ const StyledAppLayout = styled.div`
 const Main = styled.main`
   background-color: var(--color-grey-50);
   padding: 32px 24px;
+  overflow-y: auto;
 
   ${mediaBreakpointDown('lg')`
     max-width: calc(100vw - 50px);
