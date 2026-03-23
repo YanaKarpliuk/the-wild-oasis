@@ -33,8 +33,21 @@ const StyledAppLayout = styled.div`
 
 const Main = styled.main`
   background-color: var(--color-grey-50);
-  padding: 24px;
+  padding: 32px 24px;
+
+  ${mediaBreakpointDown('lg')`
+    max-width: calc(100vw - 50px);
+    padding: 24px 12px;
+  `}
 `;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+`
 
 function AppLayout() {
   return (
@@ -42,7 +55,9 @@ function AppLayout() {
         <Header/>
         <Sidebar/>
         <Main>
-          <Outlet/>
+          <Container>
+            <Outlet/>
+          </Container>
         </Main>
       </StyledAppLayout>
   );
