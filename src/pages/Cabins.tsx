@@ -6,7 +6,7 @@ import { useState } from 'react';
 import CreateCabinForm from '../features/cabins/CreateCabinForm.tsx';
 
 function Cabins() {
-  const [showForm, setShowForm] = useState<boolean>(true)
+  const [showForm, setShowForm] = useState<boolean>(false)
 
   return (
       <>
