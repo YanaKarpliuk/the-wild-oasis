@@ -18,17 +18,32 @@ const ButtonRow = styled.div`
   padding-top: 12px;
 `;
 
-function CreateCabinForm({ cabinToEdit }: { cabinToEdit?: Cabin }) {
+type Props = {
+  cabinToEdit?: Cabin
+}
+
+type CreateTypes = {
+  newCabinData: NewCabin
+}
+
+type EditTypes = CreateTypes & {
+  id: number | undefined
+}
+
+function CreateCabinForm({ cabinToEdit }: Props) {
   const { id: editId, ...editValues } = cabinToEdit || {};
   const isEditSession = Boolean(editId);
+
   const { register, handleSubmit, reset, getValues, formState } = useForm<NewCabin>({
     defaultValues: isEditSession ? editValues : {}
   });
   const { errors } = formState;
+
   const queryClient = useQueryClient();
 
+  // Create cabin.
   const { mutate: createCabinMutate, isPending: isCreating } = useMutation({
-    mutationFn: ({ newCabinData }: { newCabinData: NewCabin }) => createEditCabin(newCabinData),
+    mutationFn: ({ newCabinData }: CreateTypes) => createEditCabin(newCabinData),
     onSuccess: () => {
       toast.success('Cabin was successfully created.');
       // Refresh UI to display updated data.
@@ -40,8 +55,9 @@ function CreateCabinForm({ cabinToEdit }: { cabinToEdit?: Cabin }) {
     onError: (err) => toast.error(err.message)
   });
 
+  // Edit cabin.
   const { mutate: editCabinMutate, isPending: isEditing } = useMutation({
-    mutationFn: ({ newCabinData, id }: { newCabinData: NewCabin, id: number | undefined }) => createEditCabin(newCabinData, id),
+    mutationFn: ({ newCabinData, id }: EditTypes) => createEditCabin(newCabinData, id),
     onSuccess: () => {
       toast.success('Cabin was successfully edited.');
       // Refresh UI to display updated data.
@@ -126,10 +142,12 @@ function CreateCabinForm({ cabinToEdit }: { cabinToEdit?: Cabin }) {
         </FormRow>
 
         <ButtonRow>
-          <Button $variation="secondary" type="reset">
+          <Button $variation="secondary" type="reset" ariaLabel={'Reset the form'}>
             Cancel
           </Button>
-          <Button disabled={isInProgress}>{isEditSession ? 'Edit cabin' : 'Create cabin'}</Button>
+          <Button disabled={isInProgress} ariaLabel={isEditSession ? 'Edit cabin' : 'Create cabin'}>
+            {isEditSession ? 'Edit cabin' : 'Create cabin'}
+          </Button>
         </ButtonRow>
       </Form>
   );

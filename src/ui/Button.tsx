@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 
 type StyledProps = {
   $size?: 'small' | 'medium' | 'large',
@@ -7,9 +7,9 @@ type StyledProps = {
 }
 
 type Props = StyledProps & {
-  ariaLabel?: string,
+  ariaLabel: string,
   type?: 'reset',
-  children: string,
+  children: string | ReactNode,
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
 }
@@ -70,7 +70,7 @@ const variations = {
   `,
 };
 
-const ButtonEl = styled.button<StyledProps>`
+const StyledButton = styled.button<StyledProps>`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
@@ -81,8 +81,8 @@ const ButtonEl = styled.button<StyledProps>`
 
 function Button({ ariaLabel, onClick, type, disabled, $size, $variation, children }: Props) {
   return (
-      <ButtonEl
-          aria-label={ariaLabel || children}
+      <StyledButton
+          aria-label={ariaLabel}
           onClick={onClick}
           $size={$size}
           $variation={$variation}
@@ -90,7 +90,7 @@ function Button({ ariaLabel, onClick, type, disabled, $size, $variation, childre
           disabled={disabled}
       >
         {children}
-      </ButtonEl>
+      </StyledButton>
   );
 }
 

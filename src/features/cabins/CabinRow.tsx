@@ -1,11 +1,18 @@
 import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteCabin } from '../../services/apiCabins.ts';
+import { createEditCabin, deleteCabin, type NewCabin } from '../../services/apiCabins.ts';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import CreateCabinForm from './CreateCabinForm.tsx';
 import type { Cabin } from '../../services/apiCabins.ts';
+import Button from '../../ui/Button.tsx';
+import { HiPencilSquare, HiSquare2Stack } from 'react-icons/hi2';
+import { HiTrash } from 'react-icons/hi';
+
+type CreateTypes = {
+  newCabinData: NewCabin
+}
 
 const TableRow = styled.div`
   display: grid;
@@ -47,12 +54,26 @@ const Discount = styled.div`
 `;
 
 export default function CabinRow({ cabin }: { cabin: Cabin }) {
-  const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
+  const { id, name, maxCapacity, regularPrice, discount, image, description } = cabin;
   const [showForm, setShowForm] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
 
-  const { isPending, mutate } = useMutation({
+  // Duplicate cabin.
+  const { mutate: duplicateCabinMutate, isPending: isCreating } = useMutation({
+    mutationFn: ({ newCabinData }: CreateTypes) => createEditCabin(newCabinData),
+    onSuccess: () => {
+      toast.success('Cabin was successfully duplicated.');
+      // Refresh UI to display updated data.
+      queryClient.invalidateQueries({
+        queryKey: ['cabins']
+      });
+    },
+    onError: (err) => toast.error(err.message)
+  });
+
+  // Delete cabin.
+  const { mutate: deleteCabinMutate, isPending: isDeleting } = useMutation({
     mutationFn: (id: number) => deleteCabin(id),
     onSuccess: () => {
       toast.success('Cabin was successfully deleted.');
@@ -64,6 +85,19 @@ export default function CabinRow({ cabin }: { cabin: Cabin }) {
     onError: (err) => toast.error(err.message)
   });
 
+  function onDuplicateClick() {
+    duplicateCabinMutate({
+      newCabinData: {
+        description,
+        discount,
+        image,
+        maxCapacity,
+        name: `Copy of ${name}`,
+        regularPrice
+      }
+    });
+  }
+
   return (
       <>
         <TableRow role="row">
@@ -71,10 +105,28 @@ export default function CabinRow({ cabin }: { cabin: Cabin }) {
           <Cabin>{name}</Cabin>
           <div>Fits up to {maxCapacity} guests</div>
           <Price>{formatCurrency(regularPrice)}</Price>
-          <Discount>{formatCurrency(discount)}</Discount>
+          {discount
+              ? <Discount>{formatCurrency(discount)}</Discount>
+              : <span>&mdash;</span>}
           <div>
-            <button onClick={() => setShowForm(prev => !prev)} disabled={isPending}>Edit</button>
-            <button onClick={() => mutate(id)} disabled={isPending}>Delete</button>
+            <Button ariaLabel={`Duplicate the cabin ${name}`}
+                    $variation={'secondary'} $size={'small'}
+                    onClick={onDuplicateClick}
+                    disabled={isDeleting || isCreating}>
+              <HiSquare2Stack/>
+            </Button>
+            <Button ariaLabel={`Edit the cabin ${name}`}
+                    $variation={'secondary'} $size={'small'}
+                    onClick={() => setShowForm(prev => !prev)}
+                    disabled={isDeleting}>
+              <HiPencilSquare/>
+            </Button>
+            <Button ariaLabel={`Delete the cabin ${name}`}
+                    $variation={'secondary'} $size={'small'}
+                    onClick={() => deleteCabinMutate(id)}
+                    disabled={isDeleting}>
+              <HiTrash/>
+            </Button>
           </div>
         </TableRow>
         {showForm && <CreateCabinForm cabinToEdit={cabin}/>}
