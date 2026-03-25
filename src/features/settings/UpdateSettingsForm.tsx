@@ -1,36 +1,21 @@
 import Form from '../../ui/Form.tsx';
 import FormRow from '../../ui/FormRow.tsx';
 import Input from '../../ui/Input.tsx';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getSettings, type Setting, updateSetting } from '../../services/apiSettings.ts';
 import Spinner from '../../ui/Spinner.tsx';
-import toast from 'react-hot-toast';
 import type { FocusEvent } from 'react';
+import useSettings from './useSettings.ts';
+import useUpdateSetting from './useUpdateSetting.ts';
 
 function UpdateSettingsForm() {
-  const queryClient = useQueryClient();
-
   // Get settings.
   const {
-    isLoading,
-    data: { minBookingLength, maxBookingLength, maxGuestsPerBooking, breakfastPrice } = {}
-  } = useQuery({
-    queryKey: ['settings'],
-    queryFn: getSettings
-  });
+    // Set to empty {} initially to avoid undefined error.
+    settings: { minBookingLength, maxBookingLength, maxGuestsPerBooking, breakfastPrice } = {},
+    isLoading
+  } = useSettings();
 
-  // Edit settings.
-  const { mutate: updateSettingMutate, isPending: isUpdating } = useMutation({
-    mutationFn: updateSetting,
-    onSuccess: () => {
-      toast.success('Setting was successfully edited.');
-      // Refresh UI to display updated data.
-      queryClient.invalidateQueries({
-        queryKey: ['settings']
-      });
-    },
-    onError: (err) => toast.error(err.message)
-  });
+  // Mutate settings.
+  const { updateSettingMutate, isUpdating } = useUpdateSetting();
 
   function handleUpdate(e: FocusEvent<HTMLInputElement>, field: string) {
     const { value } = e.target;

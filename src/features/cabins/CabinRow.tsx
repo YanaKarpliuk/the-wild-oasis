@@ -1,18 +1,13 @@
 import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers.ts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createEditCabin, deleteCabin, type NewCabin } from '../../services/apiCabins.ts';
-import toast from 'react-hot-toast';
 import { useState } from 'react';
 import CreateCabinForm from './CreateCabinForm.tsx';
 import type { Cabin } from '../../services/apiCabins.ts';
 import Button from '../../ui/Button.tsx';
 import { HiPencilSquare, HiSquare2Stack } from 'react-icons/hi2';
 import { HiTrash } from 'react-icons/hi';
-
-type CreateTypes = {
-  newCabinData: NewCabin
-}
+import useDeleteCabin from './useDeleteCabin.ts';
+import useCreateCabin from './useCreateCabin.ts';
 
 const TableRow = styled.div`
   display: grid;
@@ -57,36 +52,12 @@ export default function CabinRow({ cabin }: { cabin: Cabin }) {
   const { id, name, maxCapacity, regularPrice, discount, image, description } = cabin;
   const [showForm, setShowForm] = useState<boolean>(false);
 
-  const queryClient = useQueryClient();
-
-  // Duplicate cabin.
-  const { mutate: duplicateCabinMutate, isPending: isCreating } = useMutation({
-    mutationFn: ({ newCabinData }: CreateTypes) => createEditCabin(newCabinData),
-    onSuccess: () => {
-      toast.success('Cabin was successfully duplicated.');
-      // Refresh UI to display updated data.
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-    },
-    onError: (err) => toast.error(err.message)
-  });
-
-  // Delete cabin.
-  const { mutate: deleteCabinMutate, isPending: isDeleting } = useMutation({
-    mutationFn: (id: number) => deleteCabin(id),
-    onSuccess: () => {
-      toast.success('Cabin was successfully deleted.');
-      // Refresh UI to display updated data.
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-    },
-    onError: (err) => toast.error(err.message)
-  });
+  // Mutate fns from custom hooks.
+  const { deleteCabinMutate, isDeleting } = useDeleteCabin();
+  const { createCabinMutate, isCreating } = useCreateCabin();
 
   function onDuplicateClick() {
-    duplicateCabinMutate({
+    createCabinMutate({
       newCabinData: {
         description,
         discount,

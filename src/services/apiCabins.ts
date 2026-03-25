@@ -42,7 +42,6 @@ export async function createEditCabin(newCabin: NewCabin, id?: number) {
 
   // A. Create.
   if (!id) query = supabase.from('cabins').insert([{ ...newCabin, image: imagePath }]);
-  console.log(newCabin);
 
   // B. Edit.
   if (id) query = supabase.from('cabins').update({ ...newCabin, image: imagePath }).eq('id', id);

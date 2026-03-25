@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import Input from '../../ui/Input.tsx';
 import Form from '../../ui/Form.tsx';
@@ -8,8 +6,9 @@ import Button from '../../ui/Button.tsx';
 import FileInput from '../../ui/FileInput.tsx';
 import Textarea from '../../ui/Textarea.tsx';
 import FormRow from '../../ui/FormRow.tsx';
-import { createEditCabin } from '../../services/apiCabins.ts';
 import type { NewCabin, Cabin } from '../../services/apiCabins.ts';
+import useCreateCabin from './useCreateCabin.ts';
+import useUpdateCabin from './useUpdateCabin.ts';
 
 const ButtonRow = styled.div`
   display: flex;
@@ -22,15 +21,12 @@ type Props = {
   cabinToEdit?: Cabin
 }
 
-type CreateTypes = {
-  newCabinData: NewCabin
-}
-
-type EditTypes = CreateTypes & {
-  id: number | undefined
-}
-
 function CreateCabinForm({ cabinToEdit }: Props) {
+  // Mutate fns from custom hooks.
+  const { createCabinMutate, isCreating } = useCreateCabin();
+  const { updateCabinMutate, isUpdating } = useUpdateCabin();
+  const isInProgress = isCreating || isUpdating;
+
   const { id: editId, ...editValues } = cabinToEdit || {};
   const isEditSession = Boolean(editId);
 
@@ -39,44 +35,17 @@ function CreateCabinForm({ cabinToEdit }: Props) {
   });
   const { errors } = formState;
 
-  const queryClient = useQueryClient();
-
-  // Create cabin.
-  const { mutate: createCabinMutate, isPending: isCreating } = useMutation({
-    mutationFn: ({ newCabinData }: CreateTypes) => createEditCabin(newCabinData),
-    onSuccess: () => {
-      toast.success('Cabin was successfully created.');
-      // Refresh UI to display updated data.
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message)
-  });
-
-  // Edit cabin.
-  const { mutate: editCabinMutate, isPending: isEditing } = useMutation({
-    mutationFn: ({ newCabinData, id }: EditTypes) => createEditCabin(newCabinData, id),
-    onSuccess: () => {
-      toast.success('Cabin was successfully edited.');
-      // Refresh UI to display updated data.
-      queryClient.invalidateQueries({
-        queryKey: ['cabins']
-      });
-      reset();
-    },
-    onError: (err) => toast.error(err.message)
-  });
-
-  const isInProgress = isCreating || isEditing;
-
   function onSubmit(data: NewCabin) {
     const image = typeof data.image === 'string' ? data.image : data.image[0];
     if (isEditSession) {
-      editCabinMutate({ newCabinData: { ...data, image }, id: editId });
+      // Add additional onSuccess method.
+      updateCabinMutate({ newCabinData: { ...data, image }, id: editId }, {
+        onSuccess: () => reset()
+      });
     } else {
-      createCabinMutate({ newCabinData: { ...data, image } });
+      createCabinMutate({ newCabinData: { ...data, image } }, {
+        onSuccess: () => reset()
+      });
     }
   }
 
