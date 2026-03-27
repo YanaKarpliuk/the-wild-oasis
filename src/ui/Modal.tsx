@@ -1,4 +1,17 @@
-import styled from "styled-components";
+import styled from 'styled-components';
+import { mediaBreakpointDown } from '../styles/Mixins.ts';
+import { HiXMark } from 'react-icons/hi2';
+import { createPortal } from 'react-dom';
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+  type ReactElement,
+  type HTMLAttributes
+} from 'react';
+import useOutsideClick from '../hooks/useOutsideClick.ts';
 
 const StyledModal = styled.div`
   position: fixed;
@@ -8,8 +21,21 @@ const StyledModal = styled.div`
   background-color: var(--color-grey-0);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 3.2rem 4rem;
+  padding: 32px 40px;
+  overflow-y: auto;
+  max-height: 100vh;
   transition: all 0.5s;
+
+  ${mediaBreakpointDown('lg')`
+    width: 80vw;
+  `}
+
+  ${mediaBreakpointDown('md')`
+    left: 0;
+    transform: translateY(-50%);
+    padding: 24px;
+    width: 100vw;
+  `}
 `;
 
 const Overlay = styled.div`
@@ -35,7 +61,7 @@ const Button = styled.button`
   top: 1.2rem;
   right: 1.9rem;
 
-  &:hover {
+  &:hover, &:focus {
     background-color: var(--color-grey-100);
   }
 
@@ -48,3 +74,90 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+type ModalProps = {
+  children: ReactNode
+}
+
+type OpenProps = {
+  children: ReactElement<HTMLAttributes<HTMLElement>>;
+  opens: string;
+}
+
+type WindowChildProps = {
+  onCloseModal?: () => void;
+}
+
+type WindowProps = {
+  children: ReactElement<WindowChildProps>;
+  name: string;
+}
+
+type ModalContextType = {
+  openName: string;
+  close: () => void;
+  open: (name: string) => void;
+}
+
+// 1. Create a context
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
+
+// Get context values via custom hook to avoid undefined errors.
+function useModalContext() {
+  const context = useContext(ModalContext);
+
+  if (context === undefined) {
+    throw new Error('useModalContext must be used within a ModalProvider');
+  }
+
+  return context;
+}
+
+// 2. Create parent component
+function Modal({ children }: ModalProps) {
+  const [openName, setOpenName] = useState<string>('');
+
+  const close = () => setOpenName('');
+  const open = setOpenName;
+
+  return (
+      <ModalContext.Provider value={{ close, open, openName }}>
+        {children}
+      </ModalContext.Provider>
+  );
+}
+
+// 3. Create child components
+function Open({ children, opens: opensWindowName }: OpenProps) {
+  const { open } = useModalContext();
+
+  // We need to add event to button passed via children.
+  // It can be cloned with all the necessary props.
+  return cloneElement(children, { onClick: () => open(opensWindowName) });
+}
+
+function Window({ children, name }: WindowProps) {
+  const { openName, close } = useModalContext();
+  const { ref } = useOutsideClick(close);
+
+  if (openName !== name) return null;
+
+  // Render modal as direct child of body.
+  return createPortal(
+      <Overlay>
+        <StyledModal ref={ref}>
+          <Button onClick={close} aria-label={'Close the modal'}>
+            <HiXMark/>
+          </Button>
+          <div>{cloneElement(children, { onCloseModal: close })}</div>
+        </StyledModal>
+      </Overlay>,
+      document.body
+  );
+}
+
+// 4. Add child components as properties to parent component
+Modal.Open = Open;
+Modal.Window = Window;
+
+export default Modal;

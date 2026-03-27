@@ -18,10 +18,11 @@ const ButtonRow = styled.div`
 `;
 
 type Props = {
-  cabinToEdit?: Cabin
+  cabinToEdit?: Cabin;
+  onCloseModal?: () => void;
 }
 
-function CreateCabinForm({ cabinToEdit }: Props) {
+function CreateCabinForm({ cabinToEdit, onCloseModal }: Props) {
   // Mutate fns from custom hooks.
   const { createCabinMutate, isCreating } = useCreateCabin();
   const { updateCabinMutate, isUpdating } = useUpdateCabin();
@@ -40,17 +41,25 @@ function CreateCabinForm({ cabinToEdit }: Props) {
     if (isEditSession) {
       // Add additional onSuccess method.
       updateCabinMutate({ newCabinData: { ...data, image }, id: editId }, {
-        onSuccess: () => reset()
+        onSuccess: () => {
+          reset();
+          // Call close fn if it exists.
+          onCloseModal?.()
+        }
       });
     } else {
       createCabinMutate({ newCabinData: { ...data, image } }, {
-        onSuccess: () => reset()
+        onSuccess: () => {
+          reset();
+          // Call close fn if it exists.
+          onCloseModal?.()
+        }
       });
     }
   }
 
   return (
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)} type={onCloseModal ? 'modal' : 'regular'}>
         <FormRow error={errors?.name?.message || ''} label={'Cabin name'}>
           <Input type="text" id="name"
                  disabled={isInProgress}
@@ -111,10 +120,14 @@ function CreateCabinForm({ cabinToEdit }: Props) {
         </FormRow>
 
         <ButtonRow>
-          <Button $variation="secondary" type="reset" ariaLabel={'Reset the form'}>
+          <Button onClick={() => onCloseModal?.()}
+                  $variation="secondary"
+                  type="reset"
+                  ariaLabel={'Reset the form'}>
             Cancel
           </Button>
-          <Button disabled={isInProgress} ariaLabel={isEditSession ? 'Edit cabin' : 'Create cabin'}>
+          <Button disabled={isInProgress}
+                  ariaLabel={isEditSession ? 'Edit cabin' : 'Create cabin'}>
             {isEditSession ? 'Edit cabin' : 'Create cabin'}
           </Button>
         </ButtonRow>
