@@ -5,13 +5,13 @@ import { createPortal } from 'react-dom';
 import {
   cloneElement,
   createContext,
-  useContext,
   useState,
   type ReactNode,
   type ReactElement,
   type HTMLAttributes
 } from 'react';
 import useOutsideClick from '../hooks/useOutsideClick.ts';
+import useSafeContext from '../hooks/useSafeContext.ts';
 
 const StyledModal = styled.div`
   position: fixed;
@@ -102,17 +102,6 @@ type ModalContextType = {
 // 1. Create a context
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-// Get context values via custom hook to avoid undefined errors.
-function useModalContext() {
-  const context = useContext(ModalContext);
-
-  if (context === undefined) {
-    throw new Error('useModalContext must be used within a ModalProvider');
-  }
-
-  return context;
-}
-
 // 2. Create parent component
 function Modal({ children }: ModalProps) {
   const [openName, setOpenName] = useState<string>('');
@@ -129,7 +118,7 @@ function Modal({ children }: ModalProps) {
 
 // 3. Create child components
 function Open({ children, opens: opensWindowName }: OpenProps) {
-  const { open } = useModalContext();
+  const { open } = useSafeContext(ModalContext);
 
   // We need to add event to button passed via children.
   // It can be cloned with all the necessary props.
@@ -137,7 +126,7 @@ function Open({ children, opens: opensWindowName }: OpenProps) {
 }
 
 function Window({ children, name }: WindowProps) {
-  const { openName, close } = useModalContext();
+  const { openName, close } = useSafeContext(ModalContext);
   const { ref } = useOutsideClick(close);
 
   if (openName !== name) return null;
