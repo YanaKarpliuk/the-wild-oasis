@@ -21,13 +21,15 @@ export default function AddCabin() {
       // </>
 
       //// AFTER:
-      <Modal>
-        <Modal.Open opens={'cabin-form'}>
-          <Button ariaLabel={'Add new cabin'}>Add new cabin</Button>
-        </Modal.Open>
-        <Modal.Window name={'cabin-form'}>
-          <CreateCabinForm/>
-        </Modal.Window>
-      </Modal>
+      <div>
+        <Modal>
+          <Modal.Open opens={'cabin-form'}>
+            <Button ariaLabel={'Add new cabin'}>Add new cabin</Button>
+          </Modal.Open>
+          <Modal.Window name={'cabin-form'}>
+            <CreateCabinForm/>
+          </Modal.Window>
+        </Modal>
+      </div>
   );
 }
