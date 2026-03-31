@@ -1,11 +1,33 @@
-import styled from "styled-components";
-import { format, isToday } from "date-fns";
+import styled from 'styled-components';
+import { format, isToday } from 'date-fns';
 
-import Tag from "../../ui/Tag.tsx";
-import Table from "../../ui/Table.tsx";
+import Tag from '../../ui/Tag.tsx';
+import Table from '../../ui/Table.tsx';
 
-import { formatCurrency } from "../../utils/helpers.ts";
-import { formatDistanceFromNow } from "../../utils/helpers.ts";
+import { formatCurrency } from '../../utils/helpers.ts';
+import { formatDistanceFromNow } from '../../utils/helpers.ts';
+
+type Booking = {
+  id: number;
+  created_at: string;
+  startDate: string;
+  endDate: string;
+  numNights: number;
+  numGuests: number;
+  totalPrice: number;
+  status: 'unconfirmed' | 'checked-in' | 'checked-out';
+  guests: {
+    fullName: string;
+    email: string;
+  };
+  cabins: {
+    name: string;
+  };
+}
+
+type Props = {
+  booking: Booking;
+}
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -35,51 +57,51 @@ const Amount = styled.div`
 `;
 
 function BookingRow({
-  booking: {
-    id: bookingId,
-    created_at,
-    startDate,
-    endDate,
-    numNights,
-    numGuests,
-    totalPrice,
-    status,
-    guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
-  },
-}) {
+                      booking: {
+                        id: bookingId,
+                        created_at,
+                        startDate,
+                        endDate,
+                        numNights,
+                        numGuests,
+                        totalPrice,
+                        status,
+                        guests: { fullName: guestName, email },
+                        cabins: { name: cabinName },
+                      },
+                    }: Props) {
   const statusToTagName = {
-    unconfirmed: "blue",
-    "checked-in": "green",
-    "checked-out": "silver",
+    unconfirmed: 'blue',
+    'checked-in': 'green',
+    'checked-out': 'silver',
   };
 
   return (
-    <Table.Row>
-      <Cabin>{cabinName}</Cabin>
+      <Table.Row>
+        <Cabin>{cabinName}</Cabin>
 
-      <Stacked>
-        <span>{guestName}</span>
-        <span>{email}</span>
-      </Stacked>
+        <Stacked>
+          <span>{guestName}</span>
+          <span>{email}</span>
+        </Stacked>
 
-      <Stacked>
+        <Stacked>
         <span>
           {isToday(new Date(startDate))
-            ? "Today"
-            : formatDistanceFromNow(startDate)}{" "}
+              ? 'Today'
+              : formatDistanceFromNow(startDate)}{' '}
           &rarr; {numNights} night stay
         </span>
-        <span>
-          {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}
-          {format(new Date(endDate), "MMM dd yyyy")}
+          <span>
+          {format(new Date(startDate), 'MMM dd yyyy')} &mdash;{' '}
+            {format(new Date(endDate), 'MMM dd yyyy')}
         </span>
-      </Stacked>
+        </Stacked>
 
-      <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+        <Tag $type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
 
-      <Amount>{formatCurrency(totalPrice)}</Amount>
-    </Table.Row>
+        <Amount>{formatCurrency(totalPrice)}</Amount>
+      </Table.Row>
   );
 }
 
