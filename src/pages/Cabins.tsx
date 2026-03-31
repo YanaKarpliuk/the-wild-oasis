@@ -2,13 +2,14 @@ import Heading from '../ui/Heading.tsx';
 import Row from '../ui/Row.tsx';
 import CabinTable from '../features/cabins/CabinTable.tsx';
 import AddCabin from '../features/cabins/AddCabin.tsx';
+import CabinTableOperations from '../features/cabins/CabinTableOperations.tsx';
 
 function Cabins() {
   return (
       <>
         <Row type="horizontal">
           <Heading as="h1">All cabins</Heading>
-          <p>Filter/sort</p>
+          <CabinTableOperations/>
         </Row>
         <Row>
           <CabinTable/>
