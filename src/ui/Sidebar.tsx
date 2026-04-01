@@ -4,8 +4,13 @@ import { mediaBreakpointDown, mediaBreakpointUp } from '../styles/Mixins';
 import { HiOutlineChevronDoubleRight } from 'react-icons/hi2';
 import { useState } from 'react';
 import MainNav from "./MainNav.tsx";
+import Uploader from '../data/Uploader.tsx';
 
-const StyledSidebar = styled.aside`
+type StyledProps = {
+  $isOpen: boolean;
+}
+
+const StyledSidebar = styled.aside<StyledProps>`
   background-color: var(--color-grey-0);
   padding: 12px 6px;
   border-right: 1px solid var(--color-grey-100);
@@ -23,7 +28,7 @@ const StyledSidebar = styled.aside`
     width: 50px;
     max-width: 80vw;
     
-    ${(props) => props.isOpen && css`
+    ${(props: StyledProps) => props.$isOpen && css`
       width: 400px;
 
       .toggle-btn {
@@ -65,11 +70,19 @@ const ToggleBtn = styled.button`
   `}
 `;
 
+const StyledWrapper = styled.div`
+  ${mediaBreakpointDown('lg')`
+    aside:not(.sidebar-is-open) & {
+      display: none;
+    }
+  `}
+`;
+
 function Sidebar() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-      <StyledSidebar isOpen={isOpen} className={isOpen ? 'sidebar-is-open' : ''}>
+      <StyledSidebar $isOpen={isOpen} className={isOpen ? 'sidebar-is-open' : ''}>
         <ToggleBtn
             onClick={() => setIsOpen(prev => !prev)}
             aria-label={`${isOpen ? 'Close the sidebar' : 'Open the sidebar'}`}
@@ -79,6 +92,9 @@ function Sidebar() {
         </ToggleBtn>
         <Logo/>
         <MainNav />
+        <StyledWrapper>
+          <Uploader/>
+        </StyledWrapper>
       </StyledSidebar>
   );
 }

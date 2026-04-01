@@ -5,7 +5,7 @@ export async function getBookings() {
   const { data, error } = await supabase
       .from('bookings')
       // for getting all data from referenced tables.
-      .select('id, created_at, startDate, endDate, numNights, numGuests, status, totalPricing, cabins(name), guests(fullName, email)');
+      .select('id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, cabins(name), guests(fullName, email)');
 
   if (error) {
     console.error(error);
