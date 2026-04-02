@@ -20,8 +20,34 @@ export type NewCabin = {
   regularPrice: number
 }
 
-export async function getCabins() {
-  const { data, error } = await supabase.from('cabins').select('*');
+type Filter = {
+  field: string;
+  method: 'eq' | 'gt';
+  value: number;
+}
+
+type SortBy = {
+  field: string;
+  direction: string;
+}
+
+type CabinArgs = {
+  filter: Filter | null;
+  sortBy: SortBy;
+}
+
+export async function getCabins({ filter, sortBy }: CabinArgs) {
+  let query = supabase
+      .from('cabins')
+      .select('*');
+
+  // Filter.
+  if (filter) query = query[filter.method || 'eq'](filter.field, filter.value)
+
+  // Sort.
+  if (sortBy) query = query.order(sortBy.field, {ascending: sortBy.direction === 'asc'})
+
+  const { data, error } = await query;
 
   if (error) {
     console.error(error);
