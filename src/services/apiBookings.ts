@@ -1,5 +1,6 @@
 import { getToday } from '../utils/helpers.ts';
 import supabase from './supabase';
+import { PAGE_SIZE } from '../utils/constants.ts';
 
 type Filter = {
   field: string;
@@ -14,28 +15,38 @@ type SortBy = {
 type BookingsArgs = {
   filter: Filter | null;
   sortBy: SortBy;
+  page: number;
 }
 
-export async function getBookings({ filter, sortBy }: BookingsArgs) {
+export async function getBookings({ filter, sortBy, page }: BookingsArgs) {
   let query = supabase
       .from('bookings')
       // for getting all data from referenced tables.
-      .select('id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, cabins(name), guests(fullName, email)');
+      .select('id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice, cabins(name), guests(fullName, email)',
+          { count: 'exact' });
 
   // Filter.
-  if (filter) query = query.eq(filter.field, filter.value)
+  if (filter) query = query.eq(filter.field, filter.value);
 
   // Sort.
-  if (sortBy) query = query.order(sortBy.field, {ascending: sortBy.direction === 'asc'})
+  if (sortBy) query = query.order(sortBy.field, { ascending: sortBy.direction === 'asc' });
 
-  const { data, error } = await query;
+  // Pagination.
+  if (page) {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    query = query.range(from, to);
+  }
+
+  // count exists because added within select.
+  const { data, error, count } = await query;
 
   if (error) {
     console.error(error);
     throw new Error('Bookings could not be loaded');
   }
 
-  return data;
+  return { data, count };
 }
 
 export async function getBooking(id) {

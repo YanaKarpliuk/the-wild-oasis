@@ -1,4 +1,5 @@
 import supabase from './supabase.ts';
+import { PAGE_SIZE } from '../utils/constants.ts';
 
 export type Cabin = {
   id: number;
@@ -34,12 +35,13 @@ type SortBy = {
 type CabinArgs = {
   filter: Filter | null;
   sortBy: SortBy;
+  page: number;
 }
 
-export async function getCabins({ filter, sortBy }: CabinArgs) {
+export async function getCabins({ filter, sortBy, page }: CabinArgs) {
   let query = supabase
       .from('cabins')
-      .select('*');
+      .select('*', { count: 'exact' });
 
   // Filter.
   if (filter) query = query[filter.method || 'eq'](filter.field, filter.value)
@@ -47,14 +49,21 @@ export async function getCabins({ filter, sortBy }: CabinArgs) {
   // Sort.
   if (sortBy) query = query.order(sortBy.field, {ascending: sortBy.direction === 'asc'})
 
-  const { data, error } = await query;
+  // Pagination.
+  if (page) {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) {
     console.error(error);
     throw new Error('Cabins could not be loaded');
   }
 
-  return data;
+  return { data, count };
 }
 
 export async function createEditCabin(newCabin: NewCabin, id?: number) {

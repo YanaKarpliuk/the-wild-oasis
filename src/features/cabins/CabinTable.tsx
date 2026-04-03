@@ -4,10 +4,11 @@ import useCabins from './useCabins.ts';
 import Table from '../../ui/Table.tsx';
 import Menus from '../../ui/Menus.tsx';
 import Empty from '../../ui/Empty.tsx';
+import Pagination from '../../ui/Pagination.tsx';
 
 export default function CabinTable() {
   // Fetch cabins.
-  const { isLoading, cabins } = useCabins();
+  const { isLoading, cabins, count } = useCabins();
 
   if (isLoading) return <Spinner/>;
 
@@ -28,6 +29,9 @@ export default function CabinTable() {
           <Table.Body data={cabins} render={(cabin) => (
               <CabinRow cabin={cabin} key={cabin.id}/>
           )}/>
+          <Table.Footer>
+            <Pagination count={count!}/>
+          </Table.Footer>
         </Table>
       </Menus>
   );
