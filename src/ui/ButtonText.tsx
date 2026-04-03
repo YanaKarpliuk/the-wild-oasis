@@ -9,8 +9,7 @@ const ButtonText = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
 
-  &:hover,
-  &:active {
+  &:hover, &:focus, &:active {
     color: var(--color-brand-700);
   }
 `;

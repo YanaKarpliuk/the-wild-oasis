@@ -3,9 +3,12 @@ import { format, isToday } from 'date-fns';
 
 import Tag from '../../ui/Tag.tsx';
 import Table from '../../ui/Table.tsx';
+import Menus from '../../ui/Menus.tsx';
 
 import { formatCurrency } from '../../utils/helpers.ts';
 import { formatDistanceFromNow } from '../../utils/helpers.ts';
+import { HiEye } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 
 type Booking = {
   id: number;
@@ -76,6 +79,8 @@ function BookingRow({
     'checked-out': 'silver',
   };
 
+  const navigate = useNavigate()
+
   return (
       <Table.Row>
         <Cabin>{cabinName}</Cabin>
@@ -101,6 +106,16 @@ function BookingRow({
         <Tag $type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
 
         <Amount>{formatCurrency(totalPrice)}</Amount>
+
+        <Menus.Menu id={bookingId}>
+          <Menus.Toggle id={bookingId}/>
+          <Menus.List id={bookingId}>
+            <Menus.Button icon={<HiEye/>}
+                          onClick={() => navigate(`/bookings/${bookingId}`)}>
+              See details
+            </Menus.Button>
+          </Menus.List>
+        </Menus.Menu>
       </Table.Row>
   );
 }
