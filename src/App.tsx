@@ -13,6 +13,7 @@ import GlobalStyles from './styles/GlobalStyles';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'react-hot-toast';
 import Booking from './pages/Booking.tsx';
+import Checkin from './pages/Checkin.tsx';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: '/bookings/:id',
         element: <Booking/>
+      },
+      {
+        path: '/checkin/:id',
+        element: <Checkin/>
       },
       {
         path: '/cabins',

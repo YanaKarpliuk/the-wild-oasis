@@ -114,6 +114,7 @@ const Guest = styled.div`
     flex-direction: column;
     align-items: flex-start;
   `}
+  
   p {
     display: flex;
     align-items: center;

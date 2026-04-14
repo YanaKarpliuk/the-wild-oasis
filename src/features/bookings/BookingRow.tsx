@@ -9,6 +9,7 @@ import { formatCurrency } from '../../utils/helpers.ts';
 import { formatDistanceFromNow } from '../../utils/helpers.ts';
 import { HiEye } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
+import { HiArrowDownOnSquare } from 'react-icons/hi2';
 
 type Booking = {
   id: number;
@@ -79,7 +80,7 @@ function BookingRow({
     'checked-out': 'silver',
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
       <Table.Row>
@@ -114,6 +115,11 @@ function BookingRow({
                           onClick={() => navigate(`/bookings/${bookingId}`)}>
               See details
             </Menus.Button>
+            {status === 'unconfirmed' &&
+                <Menus.Button icon={<HiArrowDownOnSquare/>}
+                              onClick={() => navigate(`/checkin/${bookingId}`)}>
+                  Check in
+                </Menus.Button>}
           </Menus.List>
         </Menus.Menu>
       </Table.Row>
