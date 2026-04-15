@@ -33,6 +33,7 @@ type IdProps = {
 type ButtonProps = {
   icon: ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
 const StyledMenu = styled.div`
@@ -166,7 +167,7 @@ function List({ id, children }: IdProps & ChildrenProps) {
   );
 }
 
-function Button({ children, icon, onClick }: ChildrenProps & ButtonProps) {
+function Button({ children, icon, onClick, disabled = false }: ChildrenProps & ButtonProps) {
   const { close } = useSafeContext(MenusContext);
 
   function handleClick() {
@@ -176,7 +177,7 @@ function Button({ children, icon, onClick }: ChildrenProps & ButtonProps) {
 
   return (
       <li>
-        <StyledButton onClick={handleClick}>
+        <StyledButton onClick={handleClick} disabled={disabled}>
           {icon}
           <span>{children}</span>
         </StyledButton>

@@ -143,7 +143,7 @@ export async function getStaysTodayActivity() {
 
 type UpdateObj = {
   status: string,
-  isPaid: boolean
+  isPaid?: boolean
 }
 
 export async function updateBooking(id: number, obj: UpdateObj) {

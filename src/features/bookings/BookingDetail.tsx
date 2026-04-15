@@ -13,6 +13,7 @@ import useBooking from './useBooking.ts';
 import Spinner from '../../ui/Spinner.tsx';
 import { mediaBreakpointDown } from '../../styles/Mixins.ts';
 import { useNavigate } from 'react-router-dom';
+import useCheckout from '../check-in-out/useCheckout.ts';
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -27,8 +28,9 @@ const HeadingGroup = styled.div`
 `;
 
 function BookingDetail() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { booking, isLoading } = useBooking();
+  const { checkout, isCheckingOut } = useCheckout();
 
   const moveBack = useMoveBack();
 
@@ -61,7 +63,18 @@ function BookingDetail() {
               <Button ariaLabel={'Check in'}
                       onClick={() => navigate(`/checkin/${id}`)}>
                 Check in
-              </Button>}
+              </Button>
+          }
+
+          {status === 'checked-in' &&
+              <Button disabled={isCheckingOut}
+                      ariaLabel={'Check out'}
+                      onClick={() => {
+                        checkout(id);
+                      }}>
+                Check out
+              </Button>
+          }
 
           <Button $variation="secondary" onClick={moveBack} ariaLabel={'Back'}>
             Back
