@@ -10,24 +10,7 @@ import { formatDistanceFromNow } from '../../utils/helpers.ts';
 import { HiEye } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import { HiArrowDownOnSquare } from 'react-icons/hi2';
-
-type Booking = {
-  id: number;
-  created_at: string;
-  startDate: string;
-  endDate: string;
-  numNights: number;
-  numGuests: number;
-  totalPrice: number;
-  status: 'unconfirmed' | 'checked-in' | 'checked-out';
-  guests: {
-    fullName: string;
-    email: string;
-  };
-  cabins: {
-    name: string;
-  };
-}
+import type { Booking } from '../../services/apiBookings.ts';
 
 type Props = {
   booking: Booking;

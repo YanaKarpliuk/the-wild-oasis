@@ -2,6 +2,24 @@ import { getToday } from '../utils/helpers.ts';
 import supabase from './supabase';
 import { PAGE_SIZE } from '../utils/constants.ts';
 
+export type Booking = {
+  id: number;
+  created_at: string;
+  startDate: string;
+  endDate: string;
+  numNights: number;
+  numGuests: number;
+  totalPrice: number;
+  status: 'unconfirmed' | 'checked-in' | 'checked-out';
+  guests: {
+    fullName: string;
+    email: string;
+  };
+  cabins: {
+    name: string;
+  };
+}
+
 type Filter = {
   field: string;
   value: string;
@@ -18,7 +36,12 @@ type BookingsArgs = {
   page: number;
 }
 
-export async function getBookings({ filter, sortBy, page }: BookingsArgs) {
+type BookingResponse = {
+  data: Booking[];
+  count: number | null;
+};
+
+export async function getBookings({ filter, sortBy, page }: BookingsArgs): Promise<BookingResponse> {
   let query = supabase
       .from('bookings')
       // for getting all data from referenced tables.

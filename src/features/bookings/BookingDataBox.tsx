@@ -197,7 +197,7 @@ function BookingDataBox({ booking }: { booking: Booking }) {
           <div>
             <HiOutlineHomeModern/>
             <p>
-              {numNights} nights in Cabin <span>{cabinName}</span>
+              {numNights} {numNights === 1 ? 'night' : 'nights'} in Cabin <span>{cabinName}</span>
             </p>
           </div>
 
@@ -214,7 +214,7 @@ function BookingDataBox({ booking }: { booking: Booking }) {
           <Guest>
             {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`}/>}
             <p>
-              {guestName} {numGuests > 1 ? `+ ${numGuests - 1} guests` : ''}
+              {guestName} {numGuests > 1 ? `+ ${numGuests - 1} ${numGuests === 2 ? 'guest' : 'guests'}` : ''}
             </p>
             <p>{email}</p>
             <p>National ID {nationalID}</p>
