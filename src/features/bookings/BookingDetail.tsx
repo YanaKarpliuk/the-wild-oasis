@@ -14,6 +14,9 @@ import Spinner from '../../ui/Spinner.tsx';
 import { mediaBreakpointDown } from '../../styles/Mixins.ts';
 import { useNavigate } from 'react-router-dom';
 import useCheckout from '../check-in-out/useCheckout.ts';
+import useDeleteBooking from './useDeleteBooking.ts';
+import Modal from '../../ui/Modal.tsx';
+import ConfirmDelete from '../../ui/ConfirmDelete.tsx';
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -31,6 +34,7 @@ function BookingDetail() {
   const navigate = useNavigate();
   const { booking, isLoading } = useBooking();
   const { checkout, isCheckingOut } = useCheckout();
+  const { deleteBookingMutate, isDeleting } = useDeleteBooking();
 
   const moveBack = useMoveBack();
 
@@ -75,6 +79,24 @@ function BookingDetail() {
                 Check out
               </Button>
           }
+
+          <Modal>
+            <Modal.Open opens={'delete'}>
+              <Button ariaLabel={'Delete booking'} $variation={'danger'}>
+                Delete
+              </Button>
+            </Modal.Open>
+            <Modal.Window name={'delete'}>
+              <ConfirmDelete
+                  onConfirm={() => {
+                    deleteBookingMutate(id, {
+                      onSettled: () => navigate('/bookings')
+                    })
+                  }}
+                  disabled={isDeleting}
+                  resourceName={`booking #${id}`}/>
+            </Modal.Window>
+          </Modal>
 
           <Button $variation="secondary" onClick={moveBack} ariaLabel={'Back'}>
             Back
