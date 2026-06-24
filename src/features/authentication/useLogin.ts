@@ -12,7 +12,7 @@ export default function useLogin() {
     mutationFn: ({ email, password }: Login) => login({ email, password }),
     onSuccess: (user) => {
       // Save data in cache.
-      queryClient.setQueriesData(['user'], user)
+      queryClient.setQueryData(['user'], user)
       navigate('/dashboard');
     },
     onError: error => {
