@@ -1,11 +1,5 @@
 import supabase from './supabase';
-
-export type Setting = {
-  minBookingLength?: string;
-  maxBookingLength?: string;
-  maxGuestsPerBooking?: string;
-  breakfastPrice?: string;
-}
+import type { Setting } from '../utils/types.ts';
 
 export async function getSettings() {
   const { data, error } = await supabase.from('settings').select('*').single();

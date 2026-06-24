@@ -1,24 +1,7 @@
 import { getToday } from '../utils/helpers.ts';
 import supabase from './supabase';
 import { PAGE_SIZE } from '../utils/constants.ts';
-
-export type Booking = {
-  id: number;
-  created_at: string;
-  startDate: string;
-  endDate: string;
-  numNights: number;
-  numGuests: number;
-  totalPrice: number;
-  status: 'unconfirmed' | 'checked-in' | 'checked-out';
-  guests: {
-    fullName: string;
-    email: string;
-  };
-  cabins: {
-    name: string;
-  };
-}
+import type { Booking } from '../utils/types.ts';
 
 type Filter = {
   field: string;

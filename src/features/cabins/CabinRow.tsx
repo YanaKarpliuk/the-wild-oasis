@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { formatCurrency } from '../../utils/helpers.ts';
 import CreateCabinForm from './CreateCabinForm.tsx';
-import type { Cabin } from '../../services/apiCabins.ts';
+import type { Cabin } from '../../utils/types.ts';
 import { HiPencilSquare, HiSquare2Stack } from 'react-icons/hi2';
 import { HiTrash } from 'react-icons/hi';
 import useDeleteCabin from './useDeleteCabin.ts';

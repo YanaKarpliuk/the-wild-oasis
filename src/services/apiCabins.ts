@@ -1,25 +1,6 @@
 import supabase from './supabase.ts';
 import { PAGE_SIZE } from '../utils/constants.ts';
-
-export type Cabin = {
-  id: number;
-  created_at: string;
-  name: string;
-  maxCapacity: number;
-  regularPrice: number;
-  discount: number;
-  description: string;
-  image: string;
-}
-
-export type NewCabin = {
-  description: string,
-  discount: number,
-  image: File | string,
-  maxCapacity: number,
-  name: string,
-  regularPrice: number
-}
+import type { NewCabin } from '../utils/types.ts';
 
 type Filter = {
   field: string;

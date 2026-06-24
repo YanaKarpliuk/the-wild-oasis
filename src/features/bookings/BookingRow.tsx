@@ -10,7 +10,7 @@ import { formatDistanceFromNow } from '../../utils/helpers.ts';
 import { HiEye, HiTrash } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import { HiArrowDownOnSquare, HiArrowUpOnSquare } from 'react-icons/hi2';
-import type { Booking } from '../../services/apiBookings.ts';
+import type { Booking } from '../../utils/types.ts';
 import useCheckout from '../check-in-out/useCheckout.ts';
 import Modal from '../../ui/Modal.tsx';
 import ConfirmDelete from '../../ui/ConfirmDelete.tsx';

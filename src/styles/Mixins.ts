@@ -1,29 +1,42 @@
-import { css } from 'styled-components';
+import { css, type Interpolation, type DefaultTheme } from 'styled-components';
 
 // Media breakpoint mixins.
-const breakpoints = {
+const breakpoints: Breakpoints = {
   sm: 576,
   md: 768,
   lg: 1024,
   xl: 1200
 };
 
-export const mediaBreakpointUp = (key) => (...args) => {
-  const breakpointValue = breakpoints[key] || key;
+export const mediaBreakpointUp =
+    (key: Breakpoint | number) =>
+    (strings: TemplateStringsArray, ...interpolations: Interpolation<DefaultTheme>[]) => {
+  const breakpointValue = typeof key === 'string' ? breakpoints[key] : key;
 
   return css`
     @media (min-width: ${breakpointValue}px) {
-      ${css(...args)}
+      ${css(strings, ...interpolations)}
     }
   `;
 };
 
-export const mediaBreakpointDown = (key) => (...args) => {
-  const breakpointValue = breakpoints[key] || key;
+export const mediaBreakpointDown =
+    (key: Breakpoint | number) =>
+        (strings: TemplateStringsArray, ...interpolations: Interpolation<DefaultTheme>[]) => {
+  const breakpointValue = typeof key === 'string' ? breakpoints[key] : key;
 
   return css`
     @media (max-width: ${breakpointValue - 1}px) {
-      ${css(...args)}
+      ${css(strings, ...interpolations)}
     }
   `;
+};
+
+type Breakpoint = 'sm' | 'md' | 'lg' | 'xl';
+
+type Breakpoints = {
+  sm: number,
+  md: number,
+  lg: number,
+  xl: number
 };

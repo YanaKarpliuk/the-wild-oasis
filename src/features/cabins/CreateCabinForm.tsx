@@ -6,7 +6,7 @@ import Button from '../../ui/Button.tsx';
 import FileInput from '../../ui/FileInput.tsx';
 import Textarea from '../../ui/Textarea.tsx';
 import FormRow from '../../ui/FormRow.tsx';
-import type { NewCabin, Cabin } from '../../services/apiCabins.ts';
+import type { NewCabin, Cabin } from '../../utils/types.ts';
 import useCreateCabin from './useCreateCabin.ts';
 import useUpdateCabin from './useUpdateCabin.ts';
 
