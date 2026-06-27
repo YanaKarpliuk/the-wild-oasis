@@ -6,47 +6,17 @@ import {
   HiOutlineCurrencyDollar,
   HiOutlineHomeModern,
 } from 'react-icons/hi2';
-
 import DataItem from '../../ui/DataItem.tsx';
 import { Flag } from '../../ui/Flag.tsx';
-
 import { formatDistanceFromNow, formatCurrency } from '../../utils/helpers.ts';
 import { mediaBreakpointDown } from '../../styles/Mixins.ts';
+import type { BookingFull } from '../../utils/types.ts';
 
 type StyledPrice = {
   $isPaid: boolean;
 }
 
-type GuestData = {
-  fullName: string;
-  email: string;
-  country: string;
-  countryFlag: string;
-  nationalID: string;
-}
-
-type CabinData = {
-  name: string;
-}
-
-type Booking = {
-  created_at: string;
-  startDate: string;
-  endDate: string;
-  numNights: number;
-  numGuests: number;
-  cabinPrice: number;
-  extraPrice: number;
-  totalPrice: number;
-  hasBreakfast: boolean;
-  observations: string;
-  isPaid: boolean;
-  guests: GuestData;
-  cabins: CabinData;
-}
-
 const StyledBookingDataBox = styled.section`
-  /* Box */
   background-color: var(--color-grey-0);
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
@@ -89,7 +59,7 @@ const Header = styled.header`
   }
 
   & span {
-    font-family: "Sono";
+    font-family: "Sono", sans-serif;
     font-size: 2rem;
     margin-left: 4px;
   }
@@ -114,7 +84,6 @@ const Guest = styled.div`
     flex-direction: column;
     align-items: flex-start;
   `}
-  
   p {
     display: flex;
     align-items: center;
@@ -173,8 +142,7 @@ const Footer = styled.footer`
   text-align: right;
 `;
 
-// A purely presentational component
-function BookingDataBox({ booking }: { booking: Booking }) {
+export default function BookingDataBox({ booking }: { booking: BookingFull }) {
   const {
     created_at,
     startDate,
@@ -203,9 +171,7 @@ function BookingDataBox({ booking }: { booking: Booking }) {
 
           <p>
             {format(new Date(startDate), 'EEE, MMM dd yyyy')} (
-            {isToday(new Date(startDate))
-                ? 'Today'
-                : formatDistanceFromNow(startDate)}
+            {isToday(new Date(startDate)) ? 'Today' : formatDistanceFromNow(startDate)}
             ) &mdash; {format(new Date(endDate), 'EEE, MMM dd yyyy')}
           </p>
         </Header>
@@ -251,5 +217,3 @@ function BookingDataBox({ booking }: { booking: Booking }) {
       </StyledBookingDataBox>
   );
 }
-
-export default BookingDataBox;

@@ -1,24 +1,18 @@
 import styled from 'styled-components';
 import { format, isToday } from 'date-fns';
-
 import Tag from '../../ui/Tag.tsx';
 import Table from '../../ui/Table.tsx';
 import Menus from '../../ui/Menus.tsx';
-
 import { formatCurrency } from '../../utils/helpers.ts';
 import { formatDistanceFromNow } from '../../utils/helpers.ts';
 import { HiEye, HiTrash } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import { HiArrowDownOnSquare, HiArrowUpOnSquare } from 'react-icons/hi2';
-import type { Booking } from '../../utils/types.ts';
+import type { Booking, StatusToTagName } from '../../utils/types.ts';
 import useCheckout from '../check-in-out/useCheckout.ts';
 import Modal from '../../ui/Modal.tsx';
 import ConfirmDelete from '../../ui/ConfirmDelete.tsx';
 import useDeleteBooking from './useDeleteBooking.ts';
-
-type Props = {
-  booking: Booking;
-}
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -47,21 +41,21 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
-function BookingRow({
-                      booking: {
-                        id: bookingId,
-                        created_at,
-                        startDate,
-                        endDate,
-                        numNights,
-                        numGuests,
-                        totalPrice,
-                        status,
-                        guests: { fullName: guestName, email },
-                        cabins: { name: cabinName },
-                      },
-                    }: Props) {
-  const statusToTagName = {
+export default function BookingRow({
+                                     booking: {
+                                       id: bookingId,
+                                       // created_at,
+                                       startDate,
+                                       endDate,
+                                       numNights,
+                                       // numGuests,
+                                       totalPrice,
+                                       status,
+                                       guests: { fullName: guestName, email },
+                                       cabins: { name: cabinName },
+                                     },
+                                   }: Props) {
+  const statusToTagName: StatusToTagName = {
     unconfirmed: 'blue',
     'checked-in': 'green',
     'checked-out': 'silver',
@@ -82,16 +76,13 @@ function BookingRow({
         </Stacked>
 
         <Stacked>
-        <span>
-          {isToday(new Date(startDate))
-              ? 'Today'
-              : formatDistanceFromNow(startDate)}{' '}
-          &rarr; {numNights} night stay
-        </span>
           <span>
-          {format(new Date(startDate), 'MMM dd yyyy')} &mdash;{' '}
-            {format(new Date(endDate), 'MMM dd yyyy')}
-        </span>
+            {isToday(new Date(startDate)) ? 'Today' : formatDistanceFromNow(startDate)}{' '}
+            &rarr; {numNights} night stay
+          </span>
+          <span>
+            {format(new Date(startDate), 'MMM dd yyyy')} &mdash;{' '}{format(new Date(endDate), 'MMM dd yyyy')}
+          </span>
         </Stacked>
 
         <Tag $type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
@@ -102,14 +93,12 @@ function BookingRow({
           <Menus.Menu id={bookingId}>
             <Menus.Toggle id={bookingId}/>
             <Menus.List id={bookingId}>
-              <Menus.Button icon={<HiEye/>}
-                            onClick={() => navigate(`/bookings/${bookingId}`)}>
+              <Menus.Button icon={<HiEye/>} onClick={() => navigate(`/bookings/${bookingId}`)}>
                 See details
               </Menus.Button>
 
               {status === 'unconfirmed' &&
-                  <Menus.Button icon={<HiArrowDownOnSquare/>}
-                                onClick={() => navigate(`/checkin/${bookingId}`)}>
+                  <Menus.Button icon={<HiArrowDownOnSquare/>} onClick={() => navigate(`/checkin/${bookingId}`)}>
                     Check in
                   </Menus.Button>
               }
@@ -143,4 +132,6 @@ function BookingRow({
   );
 }
 
-export default BookingRow;
+type Props = {
+  booking: Booking;
+}

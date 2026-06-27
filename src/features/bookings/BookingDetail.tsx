@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-
 import BookingDataBox from './BookingDataBox.tsx';
 import Row from '../../ui/Row.tsx';
 import Heading from '../../ui/Heading.tsx';
@@ -7,7 +6,6 @@ import Tag from '../../ui/Tag.tsx';
 import ButtonGroup from '../../ui/ButtonGroup.tsx';
 import Button from '../../ui/Button.tsx';
 import ButtonText from '../../ui/ButtonText.tsx';
-
 import { useMoveBack } from '../../hooks/useMoveBack.ts';
 import useBooking from './useBooking.ts';
 import Spinner from '../../ui/Spinner.tsx';
@@ -17,6 +15,8 @@ import useCheckout from '../check-in-out/useCheckout.ts';
 import useDeleteBooking from './useDeleteBooking.ts';
 import Modal from '../../ui/Modal.tsx';
 import ConfirmDelete from '../../ui/ConfirmDelete.tsx';
+import type { StatusToTagName } from '../../utils/types.ts';
+import Empty from '../../ui/Empty.tsx';
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -30,32 +30,30 @@ const HeadingGroup = styled.div`
   `}
 `;
 
-function BookingDetail() {
+export default function BookingDetail() {
   const navigate = useNavigate();
   const { booking, isLoading } = useBooking();
   const { checkout, isCheckingOut } = useCheckout();
   const { deleteBookingMutate, isDeleting } = useDeleteBooking();
-
   const moveBack = useMoveBack();
 
   if (isLoading) return <Spinner/>;
+  if (!booking) return <Empty resource={'booking'} />
 
-  const { status, id } = booking;
+  const { status, id }: Booking = booking;
 
-  const statusToTagName = {
+  const statusToTagName: StatusToTagName = {
     unconfirmed: 'blue',
     'checked-in': 'green',
     'checked-out': 'silver',
-  } as const;
-
-  type Status = keyof typeof statusToTagName;
+  };
 
   return (
       <>
         <Row type="horizontal">
           <HeadingGroup>
             <Heading as="h1">Booking #{id}</Heading>
-            <Tag $type={statusToTagName[status as Status]}>{status.replace('-', ' ')}</Tag>
+            <Tag $type={statusToTagName[status]}>{status.replace('-', ' ')}</Tag>
           </HeadingGroup>
           <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
         </Row>
@@ -106,4 +104,7 @@ function BookingDetail() {
   );
 }
 
-export default BookingDetail;
+type Booking = {
+  status: 'unconfirmed' | 'checked-in' | 'checked-out',
+  id: number
+}

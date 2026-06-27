@@ -2,27 +2,6 @@ import styled from 'styled-components';
 import { createContext, type ReactNode } from 'react';
 import useSafeContext from '../hooks/useSafeContext.ts';
 
-type TableContextType = {
-  columns: string;
-}
-
-type Props = {
-  children: ReactNode;
-}
-
-type TableProps = Props & {
-  columns: string;
-}
-
-type BodyProps<T> = {
-  data: T[] | undefined;
-  render: (item: T) => ReactNode;
-}
-
-type StyledProps = {
-  $columns: string;
-}
-
 const TableWrapper = styled.div`
   overflow-x: auto;
 `;
@@ -131,3 +110,24 @@ Table.Body = Body;
 Table.Footer = Footer;
 
 export default Table;
+
+type TableContextType = {
+  columns: string;
+}
+
+type Props = {
+  children: ReactNode;
+}
+
+type TableProps = Props & {
+  columns: string;
+}
+
+type BodyProps<T> = {
+  data: T[] | undefined;
+  render: (item: T) => ReactNode;
+}
+
+type StyledProps = {
+  $columns: string;
+}

@@ -6,5 +6,4 @@
     { "path": "./tsconfig.test.json" }
   ],
   "allowJs": true,
-  "jsx": "preserve"
 }
